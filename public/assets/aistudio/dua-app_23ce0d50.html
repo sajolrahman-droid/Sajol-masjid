@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>দোয়া সমগ্র — দৈনন্দিন দোয়া</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700&family=Amiri:wght@400;700&family=Noto+Sans+Bengali:wght@400;500;600&display=swap');
+
+  :root{
+    --ink:#0f2e28;
+    --ink-soft:#3c5c54;
+    --paper:#f6f1e4;
+    --paper-deep:#ede4cd;
+    --gold:#b8873b;
+    --gold-bright:#d4a24e;
+    --emerald:#0f4a3c;
+    --emerald-deep:#0a3229;
+    --line: rgba(15,46,40,0.14);
+    --card: #fffdf7;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(184,135,59,0.10), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(15,74,60,0.10), transparent 45%),
+      var(--paper);
+    font-family:'Noto Sans Bengali','Noto Serif Bengali',serif;
+    color:var(--ink);
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    position:relative;
+    padding:38px 20px 30px;
+    text-align:center;
+    background:linear-gradient(180deg, var(--emerald-deep), var(--emerald) 70%, transparent);
+    color:var(--paper);
+    overflow:hidden;
+  }
+  header::before, header::after{
+    content:"";
+    position:absolute;
+    width:220px; height:220px;
+    border:1px solid rgba(212,162,78,0.25);
+    border-radius:50%;
+    top:-110px;
+  }
+  header::before{ left:-70px; }
+  header::after{ right:-70px; }
+  .eyebrow{
+    letter-spacing:0.35em;
+    font-size:11px;
+    text-transform:uppercase;
+    color:var(--gold-bright);
+    font-family:'Noto Sans Bengali',sans-serif;
+    margin-bottom:10px;
+  }
+  header h1{
+    font-family:'Amiri','Noto Serif Bengali',serif;
+    font-weight:700;
+    font-size:32px;
+    margin:0 0 6px;
+  }
+  header p{
+    margin:0;
+    font-size:14px;
+    color:rgba(246,241,228,0.78);
+  }
+  .bismillah{
+    font-family:'Amiri',serif;
+    font-size:22px;
+    margin-top:16px;
+    color:var(--gold-bright);
+    direction:rtl;
+  }
+
+  /* ---------- Category rail ---------- */
+  .rail{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:16px 16px 6px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .rail::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:0 0 auto;
+    padding:8px 16px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:var(--card);
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .18s ease;
+  }
+  .chip.active{
+    background:var(--emerald);
+    color:var(--paper);
+    border-color:var(--emerald);
+  }
+
+  /* ---------- List ---------- */
+  .list{
+    padding:10px 16px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .duacard{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 18px;
+    cursor:pointer;
+    position:relative;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .duacard:active{ transform:scale(0.985); }
+  .duacard.open{
+    border-color:var(--gold);
+    box-shadow:0 6px 22px rgba(15,46,40,0.10);
+  }
+  .row-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .tag{
+    font-size:11px;
+    color:var(--gold);
+    font-weight:700;
+    letter-spacing:0.04em;
+    margin-bottom:4px;
+    display:block;
+  }
+  .title-bn{
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .chevron{
+    width:22px;height:22px;
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:50%;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    font-size:13px;
+    transition:transform .2s ease;
+  }
+  .duacard.open .chevron{ transform:rotate(180deg); background:var(--emerald); color:var(--paper); border-color:var(--emerald);}
+
+  .detail{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s ease;
+  }
+  .duacard.open .detail{ max-height:600px; }
+  .detail-inner{
+    padding-top:14px;
+    margin-top:14px;
+    border-top:1px dashed var(--line);
+  }
+  .arabic{
+    direction:rtl;
+    font-family:'Amiri',serif;
+    font-size:24px;
+    line-height:2.1;
+    color:var(--emerald-deep);
+    text-align:right;
+    background:var(--paper-deep);
+    padding:14px 16px;
+    border-radius:10px;
+    border-right:3px solid var(--gold);
+  }
+  .label{
+    font-size:11px;
+    font-weight:700;
+    color:var(--gold);
+    letter-spacing:0.06em;
+    margin:14px 0 4px;
+  }
+  .uccharon{
+    font-size:15px;
+    color:var(--ink-soft);
+    font-style:normal;
+    line-height:1.7;
+  }
+  .ortho{
+    font-size:14.5px;
+    color:var(--ink);
+    line-height:1.75;
+  }
+  .somoy{
+    display:inline-block;
+    margin-top:12px;
+    font-size:12px;
+    background:rgba(15,74,60,0.08);
+    color:var(--emerald);
+    padding:4px 10px;
+    border-radius:20px;
+    font-weight:600;
+  }
+
+  .listen-btn{
+    margin-top:14px;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:11px;
+    border:none;
+    border-radius:10px;
+    background:var(--emerald);
+    color:var(--paper);
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .listen-btn:active{ background:var(--emerald-deep); }
+  .listen-btn.speaking{ background:var(--gold); color:var(--emerald-deep); }
+  .listen-btn svg{ width:16px;height:16px; }
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-soft);
+    padding:20px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .duacard, .chevron, .detail{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">দৈনন্দিন আমল</div>
+  <h1>দোয়া সমগ্র</h1>
+  <p>ক্লিক করুন — উচ্চারণসহ দোয়া পড়ুন ও শুনুন</p>
+  <div class="bismillah">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+</header>
+
+<div class="rail" id="rail"></div>
+<div class="list" id="list"></div>
+
+<footer>স্পিকার বাটনে চাপ দিলে ব্রাউজার আরবি উচ্চারণ পড়ে শোনাবে (ডিভাইস সাপোর্ট সাপেক্ষে)।</footer>
+
+<script>
+const duas = [
+  {cat:"সকাল-সন্ধ্যা", title:"ঘুম থেকে উঠার দোয়া", somoy:"ঘুম থেকে জেগে",
+    ar:"اَلْحَمْدُ لِلّٰهِ الَّذِيْ اَحْيَانَا بَعْدَ مَا اَمَاتَنَا وَاِلَيْهِ النُّشُوْرُ",
+    uc:"আলহামদু লিল্লাহিল্লাযি আহইয়ানা বা'দা মা আমাতানা ওয়া ইলাইহিন নুশূর",
+    or:"সমস্ত প্রশংসা আল্লাহর, যিনি আমাদের মৃত্যুর (নিদ্রার) পর জীবিত করেছেন এবং তাঁরই দিকে পুনরুত্থান।"},
+  {cat:"সকাল-সন্ধ্যা", title:"সকালের দোয়া", somoy:"ফজরের পর",
+    ar:"اَصْبَحْنَا وَاَصْبَحَ الْمُلْكُ لِلّٰهِ وَالْحَمْدُ لِلّٰهِ",
+    uc:"আসবাহনা ওয়া আসবাহাল মুলকু লিল্লাহি ওয়াল হামদু লিল্লাহ",
+    or:"আমরা সকালে উপনীত হলাম এবং রাজত্ব আল্লাহরই জন্য, সমস্ত প্রশংসাও আল্লাহর।"},
+  {cat:"সকাল-সন্ধ্যা", title:"সন্ধ্যার দোয়া", somoy:"মাগরিবের আগে",
+    ar:"اَمْسَيْنَا وَاَمْسَى الْمُلْكُ لِلّٰهِ وَالْحَمْدُ لِلّٰهِ",
+    uc:"আমসাইনা ওয়া আমসাল মুলকু লিল্লাহি ওয়াল হামদু লিল্লাহ",
+    or:"আমরা সন্ধ্যায় উপনীত হলাম এবং রাজত্ব আল্লাহরই জন্য, সমস্ত প্রশংসাও আল্লাহর।"},
+  {cat:"খাবার", title:"খাবার শুরুর দোয়া", somoy:"খাওয়ার আগে",
+    ar:"بِسْمِ اللّٰهِ وَعَلٰى بَرَكَةِ اللّٰهِ",
+    uc:"বিসমিল্লাহি ওয়া আলা বারাকাতিল্লাহ",
+    or:"আল্লাহর নামে শুরু করছি এবং আল্লাহর বরকতে (আহার করছি)।"},
+  {cat:"খাবার", title:"খাবার শেষের দোয়া", somoy:"খাওয়ার পর",
+    ar:"اَلْحَمْدُ لِلّٰهِ الَّذِيْ اَطْعَمَنِيْ هٰذَا وَرَزَقَنِيْهِ مِنْ غَيْرِ حَوْلٍ مِّنِّيْ وَلَا قُوَّةٍ",
+    uc:"আলহামদু লিল্লাহিল্লাযি আত'আমানি হাযা ওয়া রাযাক্বানিহি মিন গইরি হাওলিম মিন্নি ওয়ালা কুওয়াহ",
+    or:"সমস্ত প্রশংসা আল্লাহর, যিনি আমাকে এই খাবার খাইয়েছেন এবং আমার কোনো শক্তি-সামর্থ্য ছাড়াই তা দান করেছেন।"},
+  {cat:"খাবার", title:"পানি পান করার দোয়া", somoy:"পানি পানের আগে",
+    ar:"بِسْمِ اللّٰهِ",
+    uc:"বিসমিল্লাহ",
+    or:"আল্লাহর নামে (শুরু করছি)।"},
+  {cat:"ঘরে", title:"ঘরে প্রবেশের দোয়া", somoy:"ঘরে ঢোকার সময়",
+    ar:"اَللّٰهُمَّ اِنِّيْ اَسْاَلُكَ خَيْرَ الْمَوْلِجِ وَخَيْرَ الْمَخْرَجِ بِسْمِ اللّٰهِ وَلَجْنَا وَبِسْمِ اللّٰهِ خَرَجْنَا",
+    uc:"আল্লাহুম্মা ইন্নি আসআলুকা খইরাল মাওলিজি ওয়া খইরাল মাখরাজি, বিসমিল্লাহি ওয়ালাজনা ওয়া বিসমিল্লাহি খারাজনা",
+    or:"হে আল্লাহ! আমি তোমার কাছে প্রবেশ ও বাহিরের কল্যাণ প্রার্থনা করছি। আল্লাহর নামে প্রবেশ করলাম এবং আল্লাহর নামে বের হলাম।"},
+  {cat:"ঘরে", title:"ঘর থেকে বের হওয়ার দোয়া", somoy:"বাহিরে যাওয়ার সময়",
+    ar:"بِسْمِ اللّٰهِ تَوَكَّلْتُ عَلَى اللّٰهِ وَلَا حَوْلَ وَلَا قُوَّةَ اِلَّا بِاللّٰهِ",
+    uc:"বিসমিল্লাহি তাওয়াক্কালতু আলাল্লাহি ওয়ালা হাওলা ওয়ালা কুওয়াতা ইল্লা বিল্লাহ",
+    or:"আল্লাহর নামে (বের হচ্ছি), আমি আল্লাহর উপর ভরসা করলাম। আল্লাহর সাহায্য ছাড়া কোনো শক্তি-সামর্থ্য নেই।"},
+  {cat:"টয়লেট", title:"টয়লেটে প্রবেশের দোয়া", somoy:"প্রবেশের আগে",
+    ar:"اَللّٰهُمَّ اِنِّيْ اَعُوْذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ",
+    uc:"আল্লাহুম্মা ইন্নি আউযু বিকা মিনাল খুবুসি ওয়াল খাবাইস",
+    or:"হে আল্লাহ! আমি পুরুষ ও নারী জিন-শয়তানের অনিষ্ট থেকে তোমার আশ্রয় প্রার্থনা করছি।"},
+  {cat:"টয়লেট", title:"টয়লেট থেকে বের হওয়ার দোয়া", somoy:"বের হওয়ার পর",
+    ar:"غُفْرَانَكَ",
+    uc:"গুফরানাকা",
+    or:"হে আল্লাহ! তোমার কাছে ক্ষমা চাই।"},
+  {cat:"যাতায়াত", title:"গাড়ি/বাহনে ওঠার দোয়া", somoy:"যাত্রা শুরুর আগে",
+    ar:"سُبْحَانَ الَّذِيْ سَخَّرَ لَنَا هٰذَا وَمَا كُنَّا لَهٗ مُقْرِنِيْنَ وَاِنَّآ اِلٰى رَبِّنَا لَمُنْقَلِبُوْنَ",
+    uc:"সুবহানাল্লাযি সাখখারা লানা হাযা ওয়ামা কুন্না লাহু মুক্বরিনিন, ওয়া ইন্না ইলা রব্বিনা লামুনক্বালিবুন",
+    or:"পবিত্র সেই সত্তা যিনি একে আমাদের বশীভূত করে দিয়েছেন, অথচ আমরা একে বশীভূত করতে সক্ষম ছিলাম না, নিশ্চয় আমরা আমাদের প্রতিপালকের দিকে প্রত্যাবর্তনকারী।"},
+  {cat:"যাতায়াত", title:"সফরের দোয়া", somoy:"সফরে বের হওয়ার সময়",
+    ar:"اَللّٰهُمَّ اِنَّا نَسْاَلُكَ فِيْ سَفَرِنَا هٰذَا الْبِرَّ وَالتَّقْوٰى",
+    uc:"আল্লাহুম্মা ইন্না নাসআলুকা ফি সাফারিনা হাযাল বিররা ওয়াত তাক্বওয়া",
+    or:"হে আল্লাহ! আমরা এই সফরে তোমার কাছে পূণ্য ও তাকওয়া প্রার্থনা করছি।"},
+  {cat:"নামাজ-ওযু", title:"ওযুর পরের দোয়া", somoy:"ওযু শেষে",
+    ar:"اَشْهَدُ اَنْ لَّآ اِلٰهَ اِلَّا اللّٰهُ وَحْدَهٗ لَا شَرِيْكَ لَهٗ وَاَشْهَدُ اَنَّ مُحَمَّدًا عَبْدُهٗ وَرَسُوْلُهٗ",
+    uc:"আশহাদু আল্লা ইলাহা ইল্লাল্লাহু ওয়াহদাহু লা শারিকা লাহু, ওয়া আশহাদু আন্না মুহাম্মাদান আবদুহু ওয়া রাসূলুহু",
+    or:"আমি সাক্ষ্য দিচ্ছি, আল্লাহ ছাড়া কোনো সত্য উপাস্য নেই, তিনি একক, তাঁর কোনো শরিক নেই এবং সাক্ষ্য দিচ্ছি মুহাম্মদ (সা.) তাঁর বান্দা ও রাসূল।"},
+  {cat:"নামাজ-ওযু", title:"মসজিদে প্রবেশের দোয়া", somoy:"মসজিদে ঢোকার সময়",
+    ar:"اَللّٰهُمَّ افْتَحْ لِيْ اَبْوَابَ رَحْمَتِكَ",
+    uc:"আল্লাহুম্মাফতাহ লি আবওয়াবা রহমাতিক",
+    or:"হে আল্লাহ! তোমার রহমতের দরজাসমূহ আমার জন্য খুলে দাও।"},
+  {cat:"ঘুম", title:"ঘুমানোর আগের দোয়া", somoy:"শোয়ার সময়",
+    ar:"بِاسْمِكَ اللّٰهُمَّ اَمُوْتُ وَاَحْيَا",
+    uc:"বিসমিকা আল্লাহুম্মা আমুতু ওয়া আহইয়া",
+    or:"হে আল্লাহ! তোমারই নামে আমি মৃত্যুবরণ করি (ঘুমাই) এবং জীবিত হই (জাগি)।"},
+  {cat:"অন্যান্য", title:"বিপদে-আপদে দোয়া", somoy:"কষ্টের সময়",
+    ar:"اِنَّا لِلّٰهِ وَاِنَّآ اِلَيْهِ رَاجِعُوْنَ",
+    uc:"ইন্না লিল্লাহি ওয়া ইন্না ইলাইহি রাজিউন",
+    or:"নিশ্চয় আমরা আল্লাহরই জন্য এবং নিশ্চয় আমরা তাঁরই দিকে প্রত্যাবর্তনকারী।"},
+  {cat:"অন্যান্য", title:"দুশ্চিন্তা দূর করার দোয়া", somoy:"পেরেশানির সময়",
+    ar:"اَللّٰهُمَّ اِنِّيْ عَبْدُكَ ابْنُ عَبْدِكَ ابْنُ اَمَتِكَ نَاصِيَتِيْ بِيَدِكَ",
+    uc:"আল্লাহুম্মা ইন্নি আবদুকা ইবনু আবদিকা ইবনু আমাতিকা নাসিয়াতি বিয়াদিক",
+    or:"হে আল্লাহ! আমি তোমার বান্দা, তোমার বান্দার সন্তান, তোমার বাঁদির সন্তান। আমার কপালের চুল তোমারই হাতে।"},
+  {cat:"অন্যান্য", title:"বৃষ্টি দেখলে দোয়া", somoy:"বৃষ্টির সময়",
+    ar:"اَللّٰهُمَّ صَيِّبًا نَّافِعًا",
+    uc:"আল্লাহুম্মা সইয়িবান নাফিয়া",
+    or:"হে আল্লাহ! এই বৃষ্টিকে উপকারী বৃষ্টি বানাও।"},
+  {cat:"কুরআন-জিকির", title:"কুরআন তেলাওয়াতের আগের দোয়া", somoy:"তেলাওয়াতের পূর্বে",
+    ar:"اَعُوْذُ بِاللّٰهِ مِنَ الشَّيْطٰنِ الرَّجِيْمِ",
+    uc:"আউযু বিল্লাহি মিনাশ শাইতানির রাজিম",
+    or:"আমি বিতাড়িত শয়তান থেকে আল্লাহর কাছে আশ্রয় প্রার্থনা করছি।"},
+  {cat:"কুরআন-জিকির", title:"সাইয়িদুল ইস্তিগফার", somoy:"সকাল-সন্ধ্যায়",
+    ar:"اَللّٰهُمَّ اَنْتَ رَبِّيْ لَآ اِلٰهَ اِلَّآ اَنْتَ خَلَقْتَنِيْ وَاَنَا عَبْدُكَ وَاَنَا عَلٰى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ",
+    uc:"আল্লাহুম্মা আনতা রব্বি লা ইলাহা ইল্লা আনতা, খলাক্বতানি ওয়া আনা আবদুকা, ওয়া আনা আলা আহদিকা ওয়া ওয়া'দিকা মাসতাতা'তু",
+    or:"হে আল্লাহ! তুমি আমার প্রতিপালক, তুমি ছাড়া কোনো সত্য উপাস্য নেই। তুমি আমাকে সৃষ্টি করেছ, আমি তোমার বান্দা এবং যথাসাধ্য আমি তোমার প্রতিশ্রুতি ও অঙ্গীকারের উপর আছি।"},
+  {cat:"নামাজ-ওযু", title:"দুই সিজদার মাঝের দোয়া", somoy:"নামাজে সিজদার মাঝে",
+    ar:"رَبِّ اغْفِرْ لِيْ",
+    uc:"রব্বিগফিরলি",
+    or:"হে আমার প্রতিপালক! আমাকে ক্ষমা করো।"},
+  {cat:"নামাজ-ওযু", title:"প্রয়োজন পূরণের দোয়া (হাজত)", somoy:"বিশেষ প্রয়োজনে",
+    ar:"لَآ اِلٰهَ اِلَّا اللّٰهُ الْحَلِيْمُ الْكَرِيْمُ سُبْحَانَ اللّٰهِ رَبِّ الْعَرْشِ الْعَظِيْمِ",
+    uc:"লা ইলাহা ইল্লাল্লাহুল হালিমুল কারিম, সুবহানাল্লাহি রব্বিল আরশিল আযিম",
+    or:"আল্লাহ ছাড়া কোনো সত্য উপাস্য নেই, তিনি সহনশীল ও মহানুভব। মহান আরশের প্রতিপালক আল্লাহ পবিত্র।"},
+  {cat:"অন্যান্য", title:"ঋণ থেকে মুক্তির দোয়া", somoy:"ঋণগ্রস্ত অবস্থায়",
+    ar:"اَللّٰهُمَّ اكْفِنِيْ بِحَلَالِكَ عَنْ حَرَامِكَ وَاَغْنِنِيْ بِفَضْلِكَ عَمَّنْ سِوَاكَ",
+    uc:"আল্লাহুম্মাকফিনি বিহালালিকা আন হারামিক, ওয়া আগনিনি বিফাদলিকা আম্মান সিওয়াক",
+    or:"হে আল্লাহ! তোমার হালাল দিয়ে আমাকে হারাম থেকে যথেষ্ট করো এবং তোমার অনুগ্রহ দিয়ে তুমি ছাড়া অন্য সবার থেকে আমাকে অমুখাপেক্ষী করো।"},
+  {cat:"স্বাস্থ্য", title:"অসুস্থ ব্যক্তির জন্য দোয়া", somoy:"রোগী দেখতে গিয়ে",
+    ar:"لَا بَاْسَ طَهُوْرٌ اِنْ شَآءَ اللّٰهُ",
+    uc:"লা বা'সা তহুরুন ইনশাআল্লাহ",
+    or:"কোনো ভয় নেই, ইনশাআল্লাহ এটা (রোগ) গুনাহ থেকে পবিত্রকারী।"},
+  {cat:"অন্যান্য", title:"নতুন কাপড় পরিধানের দোয়া", somoy:"নতুন পোশাক পরার সময়",
+    ar:"اَللّٰهُمَّ لَكَ الْحَمْدُ اَنْتَ كَسَوْتَنِيْهِ اَسْاَلُكَ خَيْرَهٗ وَخَيْرَ مَا صُنِعَ لَهٗ",
+    uc:"আল্লাহুম্মা লাকাল হামদু আনতা কাসাওতানিহি, আসআলুকা খইরাহু ওয়া খইরা মা সুনিআ লাহু",
+    or:"হে আল্লাহ! সব প্রশংসা তোমারই, তুমিই আমাকে এই কাপড় পরিয়েছ। আমি তোমার কাছে এর কল্যাণ এবং যে উদ্দেশ্যে তৈরি হয়েছে তার কল্যাণ চাই।"},
+  {cat:"সামাজিক", title:"হাঁচি দেওয়া ও শোনার দোয়া", somoy:"হাঁচি দিলে/শুনলে",
+    ar:"اَلْحَمْدُ لِلّٰهِ — يَرْحَمُكَ اللّٰهُ — يَهْدِيْكُمُ اللّٰهُ وَيُصْلِحُ بَالَكُمْ",
+    uc:"আলহামদুলিল্লাহ (হাঁচিদাতা বলবে) — ইয়ারহামুকাল্লাহ (শ্রোতা বলবে) — ইয়াহদিকুমুল্লাহু ওয়া ইউসলিহু বালাকুম (জবাবে হাঁচিদাতা বলবে)",
+    or:"হাঁচিদাতা বলবে 'সমস্ত প্রশংসা আল্লাহর', শ্রোতা বলবে 'আল্লাহ আপনার প্রতি রহম করুন', এর জবাবে হাঁচিদাতা বলবে 'আল্লাহ আপনাদের হেদায়েত দিন ও অবস্থা ভালো করুন'।"},
+  {cat:"যাতায়াত", title:"বাজারে প্রবেশের দোয়া", somoy:"বাজারে ঢোকার সময়",
+    ar:"لَآ اِلٰهَ اِلَّا اللّٰهُ وَحْدَهٗ لَا شَرِيْكَ لَهٗ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيٖ وَيُمِيْتُ وَهُوَ حَيٌّ لَّا يَمُوْتُ بِيَدِهِ الْخَيْرُ وَهُوَ عَلٰى كُلِّ شَيْءٍ قَدِيْرٌ",
+    uc:"লা ইলাহা ইল্লাল্লাহু ওয়াহদাহু লা শারিকা লাহু, লাহুল মুলকু ওয়া লাহুল হামদু, ইউহয়ি ওয়া ইউমিতু, ওয়া হুওয়া হাইয়ুল লা ইয়ামুতু, বিয়াদিহিল খইর, ওয়া হুওয়া আলা কুল্লি শাইয়িন ক্বাদির",
+    or:"আল্লাহ ছাড়া কোনো সত্য উপাস্য নেই, তিনি একক, তাঁর কোনো শরিক নেই। রাজত্ব ও প্রশংসা তাঁরই, তিনি জীবন দেন ও মৃত্যু দেন, তিনি চিরঞ্জীব, তাঁর মৃত্যু নেই, সকল কল্যাণ তাঁরই হাতে, তিনি সর্বশক্তিমান।"},
+  {cat:"প্রকৃতি", title:"বজ্রধ্বনি শুনলে দোয়া", somoy:"বজ্রপাতের সময়",
+    ar:"سُبْحَانَ الَّذِيْ يُسَبِّحُ الرَّعْدُ بِحَمْدِهٖ وَالْمَلٰئِكَةُ مِنْ خِيْفَتِهٖ",
+    uc:"সুবহানাল্লাযি ইউসাব্বিহুর রা'দু বিহামদিহি ওয়াল মালাইকাতু মিন খিফাতিহি",
+    or:"পবিত্র সেই সত্তা, বজ্রধ্বনি ও ফেরেশতাগণ যাঁর ভয়ে তাঁরই প্রশংসাসহ পবিত্রতা ঘোষণা করে।"},
+  {cat:"প্রকৃতি", title:"ঝড়ো বাতাসের দোয়া", somoy:"প্রবল বাতাসের সময়",
+    ar:"اَللّٰهُمَّ اِنِّيْ اَسْاَلُكَ خَيْرَهَا وَخَيْرَ مَا فِيْهَا وَخَيْرَ مَآ اُرْسِلَتْ بِهٖ وَاَعُوْذُ بِكَ مِنْ شَرِّهَا وَشَرِّ مَا فِيْهَا وَشَرِّ مَآ اُرْسِلَتْ بِهٖ",
+    uc:"আল্লাহুম্মা ইন্নি আসআলুকা খইরাহা ওয়া খইরা মা ফিহা ওয়া খইরা মা উরসিলাত বিহি, ওয়া আউযু বিকা মিন শাররিহা ওয়া শাররি মা ফিহা ওয়া শাররি মা উরসিলাত বিহি",
+    or:"হে আল্লাহ! আমি এই বাতাসের কল্যাণ, এতে যা আছে তার কল্যাণ এবং যে উদ্দেশ্যে পাঠানো হয়েছে তার কল্যাণ চাই। আর এর অনিষ্ট, এতে যা আছে তার অনিষ্ট ও যে উদ্দেশ্যে পাঠানো হয়েছে তার অনিষ্ট থেকে তোমার আশ্রয় চাই।"},
+  {cat:"পরিবার", title:"পিতা-মাতার জন্য দোয়া", somoy:"যেকোনো সময়",
+    ar:"رَبِّ ارْحَمْهُمَا كَمَا رَبَّيٰنِيْ صَغِيْرًا",
+    uc:"রব্বির হামহুমা কামা রব্বায়ানি সগিরা",
+    or:"হে আমার প্রতিপালক! তাদের উভয়ের প্রতি রহম করো, যেমন তারা শৈশবে আমাকে লালন-পালন করেছেন।"},
+  {cat:"পরিবার", title:"সৎ সন্তান লাভের দোয়া", somoy:"যেকোনো সময়",
+    ar:"رَبِّ هَبْ لِيْ مِنَ الصّٰلِحِيْنَ",
+    uc:"রব্বি হাবলি মিনাস সালিহিন",
+    or:"হে আমার প্রতিপালক! আমাকে একটি সৎকর্মশীল সন্তান দান করো।"},
+  {cat:"কুরআন-জিকির", title:"দুনিয়া ও আখিরাতের কল্যাণের দোয়া", somoy:"যেকোনো সময়",
+    ar:"رَبَّنَآ اٰتِنَا فِي الدُّنْيَا حَسَنَةً وَّفِيْ الْاٰخِرَةِ حَسَنَةً وَّقِنَا عَذَابَ النَّارِ",
+    uc:"রব্বানা আতিনা ফিদ্দুনয়া হাসানাতাওঁ ওয়া ফিল আখিরাতি হাসানাতাওঁ ওয়া ক্বিনা আযাবান নার",
+    or:"হে আমাদের প্রতিপালক! আমাদের দুনিয়াতে কল্যাণ দাও এবং আখিরাতেও কল্যাণ দাও, আর আমাদের জাহান্নামের আযাব থেকে রক্ষা করো।"},
+  {cat:"কুরআন-জিকির", title:"জ্ঞান বৃদ্ধির দোয়া", somoy:"পড়াশোনার আগে",
+    ar:"رَبِّ زِدْنِيْ عِلْمًا",
+    uc:"রব্বি জিদনি ইলমা",
+    or:"হে আমার প্রতিপালক! আমার জ্ঞান বৃদ্ধি করে দাও।"},
+  {cat:"রোজা-ইবাদত", title:"ইফতারের দোয়া", somoy:"রোজা ভাঙার সময়",
+    ar:"اَللّٰهُمَّ اِنِّيْ لَكَ صُمْتُ وَبِكَ اٰمَنْتُ وَعَلٰى رِزْقِكَ اَفْطَرْتُ",
+    uc:"আল্লাহুম্মা ইন্নি লাকা সুমতু ওয়া বিকা আমানতু ওয়া আলা রিযক্বিকা আফতরতু",
+    or:"হে আল্লাহ! আমি তোমারই জন্য রোজা রেখেছি, তোমার প্রতিই ঈমান এনেছি এবং তোমার দেওয়া রিযিক দ্বারা ইফতার করলাম।"},
+  {cat:"রোজা-ইবাদত", title:"রোজার নিয়ত", somoy:"সাহরির সময়",
+    ar:"وَبِصَوْمِ غَدٍ نَّوَيْتُ مِنْ شَهْرِ رَمَضَانَ",
+    uc:"ওয়া বিসাওমি গাদিন নাওয়াইতু মিন শাহরি রামাদান",
+    or:"আমি রমজান মাসের আগামীকালের রোজা রাখার নিয়ত করলাম।"},
+  {cat:"কবর ও ইন্তেকাল", title:"কবরস্থানে প্রবেশের দোয়া", somoy:"কবরস্থানে গেলে",
+    ar:"اَلسَّلَامُ عَلَيْكُمْ اَهْلَ الدِّيَارِ مِنَ الْمُؤْمِنِيْنَ وَالْمُسْلِمِيْنَ وَاِنَّآ اِنْ شَآءَ اللّٰهُ بِكُمْ لَاحِقُوْنَ",
+    uc:"আসসালামু আলাইকুম আহলাদ দিয়ারি মিনাল মুমিনিনা ওয়াল মুসলিমিন, ওয়া ইন্না ইনশাআল্লাহু বিকুম লাহিকুন",
+    or:"হে কবরবাসী মুমিন ও মুসলিমগণ! তোমাদের প্রতি শান্তি বর্ষিত হোক, আমরাও ইনশাআল্লাহ তোমাদের সাথে মিলিত হব।"},
+  {cat:"যাতায়াত", title:"নতুন এলাকায় প্রবেশের দোয়া", somoy:"নতুন স্থানে পৌঁছালে",
+    ar:"اَعُوْذُ بِكَلِمَاتِ اللّٰهِ التَّآمَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+    uc:"আউযু বিকালিমাতিল্লাহিত তাম্মাতি মিন শাররি মা খলাক্ব",
+    or:"আল্লাহর পরিপূর্ণ বাণীসমূহের মাধ্যমে আমি তাঁর সৃষ্টির অনিষ্ট থেকে আশ্রয় প্রার্থনা করছি।"},
+  {cat:"কুরআন-জিকির", title:"দ্বীনের উপর অবিচল থাকার দোয়া", somoy:"যেকোনো সময়",
+    ar:"رَبَّنَا لَا تُزِغْ قُلُوْبَنَا بَعْدَ اِذْ هَدَيْتَنَا وَهَبْ لَنَا مِنْ لَّدُنْكَ رَحْمَةً اِنَّكَ اَنْتَ الْوَهَّابُ",
+    uc:"রব্বানা লা তুযিগ কুলুবানা বা'দা ইয হাদাইতানা ওয়া হাবলানা মিল্লাদুনকা রহমাহ, ইন্নাকা আনতাল ওয়াহহাব",
+    or:"হে আমাদের প্রতিপালক! আমাদের হেদায়েত দেওয়ার পর আমাদের অন্তরকে বাঁকা করে দিও না এবং তোমার নিকট থেকে আমাদের রহমত দান করো, নিশ্চয় তুমিই মহাদাতা।"},
+];
+
+const cats = ["সব", ...Array.from(new Set(duas.map(d=>d.cat)))];
+let activeCat = "সব";
+
+const rail = document.getElementById('rail');
+const list = document.getElementById('list');
+
+function renderRail(){
+  rail.innerHTML = "";
+  cats.forEach(c=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (c===activeCat ? ' active' : '');
+    chip.textContent = c;
+    chip.onclick = ()=>{ activeCat = c; renderRail(); renderList(); };
+    rail.appendChild(chip);
+  });
+}
+
+let openIndex = -1;
+
+function speak(text, btn){
+  if(!('speechSynthesis' in window)){
+    btn.textContent = "এই ব্রাউজারে ভয়েস সাপোর্ট নেই";
+    setTimeout(()=>{ setBtnLabel(btn); }, 1800);
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'ar-SA';
+  utter.rate = 0.8;
+  btn.classList.add('speaking');
+  setBtnLabel(btn, true);
+  utter.onend = ()=>{ btn.classList.remove('speaking'); setBtnLabel(btn,false); };
+  utter.onerror = ()=>{ btn.classList.remove('speaking'); setBtnLabel(btn,false); };
+  window.speechSynthesis.speak(utter);
+}
+
+function setBtnLabel(btn, speaking){
+  btn.innerHTML = speaking
+    ? `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg> পড়া হচ্ছে...`
+    : `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> উচ্চারণ শুনুন`;
+}
+
+function renderList(){
+  list.innerHTML = "";
+  const filtered = duas.filter(d=> activeCat==="সব" || d.cat===activeCat);
+  filtered.forEach((d, idx)=>{
+    const globalIdx = duas.indexOf(d);
+    const card = document.createElement('div');
+    card.className = 'duacard' + (openIndex===globalIdx ? ' open' : '');
+    card.innerHTML = `
+      <div class="row-top">
+        <div>
+          <span class="tag">${d.cat}</span>
+          <div class="title-bn">${d.title}</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="detail">
+        <div class="detail-inner">
+          <div class="arabic">${d.ar}</div>
+          <div class="label">উচ্চারণ</div>
+          <div class="uccharon">${d.uc}</div>
+          <div class="label">অর্থ</div>
+          <div class="ortho">${d.or}</div>
+          <span class="somoy">🕓 ${d.somoy}</span>
+          <button class="listen-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> উচ্চারণ শুনুন</button>
+        </div>
+      </div>
+    `;
+    card.querySelector('.row-top').onclick = ()=>{
+      openIndex = openIndex===globalIdx ? -1 : globalIdx;
+      window.speechSynthesis && window.speechSynthesis.cancel();
+      renderList();
+    };
+    const listenBtn = card.querySelector('.listen-btn');
+    listenBtn.onclick = (e)=>{
+      e.stopPropagation();
+      speak(d.ar, listenBtn);
+    };
+    list.appendChild(card);
+  });
+}
+
+renderRail();
+renderList();
+</script>
+</body>
+</html>

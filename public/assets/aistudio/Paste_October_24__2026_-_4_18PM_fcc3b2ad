@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>মসজিদ হিসাবঘর</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f7f5;--c:#fff;--t:#16302b;--p:#0f6b4f;--m:#66786f;--b:#dce7e2;--r:#c0392b;--g:#1e8449;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0e1714;--c:#17231f;--t:#e6f0ec;--p:#3fb98c;--m:#93a8a0;--b:#26362f;--r:#ff7b6b;--g:#5fd08f}}
+html,body{margin:0;background:var(--bg);color:var(--t);font-family:"Noto Sans Bengali","SolaimanLipi",system-ui,sans-serif;font-size:15px}
+header{background:var(--p);color:#fff;padding:14px 16px;text-align:center}
+header h1{margin:0;font-size:20px}header small{opacity:.85}
+nav{display:flex;gap:6px;overflow-x:auto;padding:8px;background:var(--c);border-bottom:1px solid var(--b);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+nav button{flex:1;white-space:nowrap;border:1px solid var(--b);background:var(--bg);color:var(--t);padding:8px 12px;border-radius:8px;font:inherit;cursor:pointer}
+nav button.on{background:var(--p);color:#fff;border-color:var(--p)}
+main{max-width:900px;margin:0 auto;padding:10px}
+.card{background:var(--c);border:1px solid var(--b);border-radius:12px;padding:12px;margin-bottom:10px}
+.card h3{margin:0 0 8px;font-size:16px}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.k div{background:var(--bg);border-radius:10px;padding:10px;text-align:center}
+.k b{display:block;font-size:18px;margin-top:2px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-bottom:8px}
+label{font-size:13px;color:var(--m);display:block}
+input,select,textarea{width:100%;box-sizing:border-box;padding:8px;margin-top:3px;border:1px solid var(--b);border-radius:8px;background:var(--bg);color:var(--t);font:inherit}
+.btn{background:var(--p);color:#fff;border:0;padding:9px 16px;border-radius:8px;font:inherit;cursor:pointer}
+.btn.s{background:var(--m)}
+.x{background:none;border:0;color:var(--r);cursor:pointer;font:inherit}
+.w{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:6px;border-bottom:1px solid var(--b);text-align:left}.r{text-align:right}.m{color:var(--m)}
+.in{color:var(--g)}.out{color:var(--r)}
+footer{text-align:center;padding:16px 10px;color:var(--m);font-size:13px;line-height:1.7}footer b{color:var(--t)}
+#toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--t);color:var(--bg);padding:8px 16px;border-radius:20px;display:none;z-index:9}
+</style></head><body>
+<header><h1>🕌 <span id="mn">মসজিদ হিসাবঘর</span></h1><small>আয়-ব্যয়, দান ও উন্নয়নের পূর্ণ হিসাব</small></header>
+<nav id="nav"></nav><main id="v"></main><footer>অ্যাপ তৈরি করেছেন (Developed by): <b>Md Moddasel Hoque</b><br>মোবাইল (Cell): <b>01914393139</b></footer><div id="toast"></div>
+<script>
+const K='mosqueHisab1';let D=null;
+try{D=JSON.parse(localStorage.getItem(K))}catch(e){}
+D=D||{name:'আমাদের মসজিদ',ob:0,oc:0,mem:0,tx:[],plan:[]};
+D.ppl=D.ppl||[];D.plan=D.plan||[];D.pin=D.pin||'';D.pl=D.pl||[];D.ds=D.ds||[];
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(D))}catch(e){}};
+const $=i=>document.getElementById(i);
+const f=n=>'৳ '+(+n||0).toLocaleString('bn-BD');
+const today=()=>new Date().toISOString().slice(0,10);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const INC=['মুসল্লিদের দান','সদস্যদের দান/চাঁদা','জুমার দান','বিশেষ দান','যাকাত/ফিতরা','অন্যান্য আয়','ধান বিক্রি'];
+const EXP=['উন্নয়ন খরচ','মাসিক খরচ','ইমাম/হুজুরের বেতন','মুয়াজ্জিনের বেতন','বিদ্যুৎ (কারেন্ট) বিল','গ্যাস বিল','পানি বিল','অন্যান্য খরচ'];
+const TABS=[['home','ড্যাশবোর্ড'],['in','আয়/দান'],['out','খরচ'],['mem','সদস্য ও চাঁদা'],['pl','ওয়াদা/প্রতিশ্রুতি'],['plan','উন্নয়ন ক্যালকুলেটর'],['rep','রিপোর্ট']];
+let tab='home',flt='',pend=null,rmon=today().slice(0,7),mmon=rmon,ry=rmon.slice(0,4),edit=null,unl=false;
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2600)}
+function bal(){let b=+D.ob||0,c=+D.oc||0;D.tx.forEach(t=>{const a=+t.amt;
+ if(t.type=='in'){t.acc=='bank'?b+=a:c+=a}
+ else if(t.type=='out'){t.acc=='bank'?b-=a:c-=a}
+ else if(t.acc=='bank'){b-=a;c+=a}else{c-=a;b+=a}});return{b,c}}
+const sum=(l,fn)=>l.reduce((s,t)=>s+(fn?fn(t):+t.amt),0);
+function sumBy(l,k){const o={};l.forEach(t=>{const key=t[k];if(key)o[key]=(o[key]||0)+ +t.amt});return o}
+function rows(o){const e=Object.entries(o).sort((a,b)=>b[1]-a[1]);return e.length?e.map(([k,v])=>`<tr><td>${esc(k)}</td><td class="r">${f(v)}</td></tr>`).join(''):'<tr><td colspan="2" class="m">কোনো তথ্য নেই</td></tr>'}
+function setTab(t){tab=t;flt='';pend=null;edit=null;epl=null;render()}
+function render(){if(D.pin&&!unl){$('nav').innerHTML='';$('v').innerHTML='<div class="card"><h3>🔒 পিন দিন</h3><input type="password" id="lp" inputmode="numeric"><br><br><button class="btn" onclick="unlock()">খুলুন</button></div>';return}
+ $('nav').innerHTML=TABS.map(([k,n])=>`<button class="${k==tab?'on':''}" onclick="setTab('${k}')">${n}</button>`).join('');
+ $('mn').textContent=D.name;
+ $('v').innerHTML=({home:home,in:()=>txv('in'),out:()=>txv('out'),plan:planv,mem:memv,pl:plv,rep:repv})[tab]();
+}
+function home(){const {b,c}=bal(),m=today().slice(0,7);
+ const mi=sum(D.tx.filter(t=>t.type=='in'&&t.date.startsWith(m))),mo=sum(D.tx.filter(t=>t.type=='out'&&t.date.startsWith(m)));
+ const ti=sum(D.tx.filter(t=>t.type=='in')),to=sum(D.tx.filter(t=>t.type=='out'));
+ const rec=[...D.tx].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id).slice(0,8);
+ return `<div class="card"><h3>বর্তমান অবস্থা</h3><div class="k">
+ <div>ব্যাংক অ্যাকাউন্টে<b>${f(b)}</b></div><div>কোষাধ্যক্ষের কাছে<b>${f(c)}</b></div><div>মোট তহবিল<b>${f(b+c)}</b></div></div></div>
+ <div class="card"><h3>হিসাবের সারসংক্ষেপ</h3><div class="k">
+ <div>এ মাসের আয়<b class="in">${f(mi)}</b></div><div>এ মাসের খরচ<b class="out">${f(mo)}</b></div>
+ <div>মোট আয়<b class="in">${f(ti)}</b></div><div>মোট খরচ<b class="out">${f(to)}</b></div></div></div>
+ <div class="card"><h3>ব্যাংক ↔ কোষাধ্যক্ষ লেনদেন</h3><div class="g">
+ <label>তারিখ<input type="date" id="xd" value="${today()}"></label>
+ <label>ধরন<select id="xa"><option value="bank">ব্যাংক থেকে উত্তোলন (কোষাধ্যক্ষকে)</option><option value="cash">ব্যাংকে জমা (কোষাধ্যক্ষ থেকে)</option></select></label>
+ <label>টাকা<input type="number" id="xm" min="0"></label></div><button class="btn" onclick="xfer()">সংরক্ষণ</button></div>
+ <div class="card"><h3>সাম্প্রতিক লেনদেন</h3>${tbl(rec,false)}</div>
+ <div class="card"><h3>সেটিংস</h3><div class="g">
+ <label>মসজিদের নাম<input id="sn" value="${esc(D.name)}"></label>
+ <label>শুরুর ব্যাংক ব্যালেন্স<input type="number" id="sb" value="${D.ob}"></label>
+ <label>শুরুর কোষাধ্যক্ষের ব্যালেন্স<input type="number" id="sc" value="${D.oc}"></label>
+ <label>পিন লক (ফাঁকা = বন্ধ)<input type="password" id="sp" inputmode="numeric" value="${esc(D.pin)}"></label></div>
+ <button class="btn s" onclick="setg()">আপডেট</button></div>`}
+function setg(){D.name=$('sn').value||D.name;D.ob=+$('sb').value||0;D.oc=+$('sc').value||0;D.pin=$('sp').value;unl=true;save();render();toast('আপডেট হয়েছে')}
+function xfer(){const a=+$('xm').value;if(a<=0)return toast('টাকার পরিমাণ দিন');
+ D.tx.push({id:Date.now(),type:'xfer',date:$('xd').value||today(),cat:$('xa').value=='bank'?'ব্যাংক থেকে উত্তোলন':'ব্যাংকে জমা',name:'',amt:a,acc:$('xa').value,note:''});save();render();toast('সংরক্ষিত')}
+function tbl(l,fl){if(!l.length)return '<p class="m">কোনো লেনদেন নেই</p>';
+ return `<div class="w"><table><tr><th>তারিখ</th><th>খাত</th><th>নাম/বিবরণ</th><th class="r">টাকা</th><th>হিসাব</th>${fl?'<th></th>':''}</tr>`+
+ l.map(t=>`<tr><td>${t.date}</td><td>${esc(t.cat)}</td><td>${esc(t.name)} <span class="m">${esc(t.note)}</span></td>
+ <td class="r ${t.type}">${f(t.amt)}</td><td>${t.type=='xfer'?'—':t.acc=='bank'?'ব্যাংক':'কোষাধ্যক্ষ'}</td>
+ ${fl?`<td><button class="x" onclick="ed(${t.id})">✎</button><button class="x" onclick="del(${t.id})">${pend==t.id?'নিশ্চিত?':'✕'}</button></td>`:''}</tr>`).join('')+'</table></div>'}
+function txv(ty){const cats=ty=='in'?INC:EXP;
+ const l=D.tx.filter(t=>t.type==ty&&(!flt||(t.name+t.cat+t.note).includes(flt))).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+ return `<div class="card"><h3>${ty=='in'?'নতুন আয়/দান':'নতুন খরচ'}</h3><div class="g">
+ <label>তারিখ<input type="date" id="d" value="${today()}"></label>
+ <label>খাত<select id="c">${cats.map(x=>`<option>${x}</option>`).join('')}</select></label>
+ <label>${ty=='in'?'দাতার নাম':'কাকে/বিবরণ'}<input id="n"></label>
+ <label>টাকা<input type="number" id="a" min="0"></label>
+ <label>${ty=='in'?'কোথায় জমা':'কোথা থেকে'}<select id="ac"><option value="cash">কোষাধ্যক্ষের হাতে</option><option value="bank">ব্যাংক</option></select></label>
+ <label>মন্তব্য<input id="o"></label></div><button class="btn" onclick="addTx('${ty}')">সংরক্ষণ</button></div>
+ <div class="card"><h3>তালিকা (মোট ${f(sum(l))})</h3><input placeholder="নাম/খাত দিয়ে খুঁজুন, তারপর এন্টার চাপুন" value="${esc(flt)}" onchange="flt=this.value;render()">${tbl(l,true)}</div>`}
+function addTx(ty){const a=+$('a').value;if(a<=0)return toast('টাকার পরিমাণ দিন');
+ const t={id:Date.now(),type:ty,date:$('d').value||today(),cat:$('c').value,name:$('n').value.trim(),amt:a,acc:$('ac').value,note:$('o').value.trim()};
+ const bl=bal();if(edit){const i=D.tx.findIndex(x=>x.id==edit.id);t.id=edit.id;if(i>=0)D.tx[i]=t;else D.tx.push(t);edit=null}else D.tx.push(t);save();render();
+ toast(ty=='out'&&a>(t.acc=='bank'?bl.b:bl.c)?'সংরক্ষিত — সতর্কতা: এই হিসাবের ব্যালেন্স কম ছিল':'সংরক্ষিত')}
+function del(id){if(pend==id){D.tx=D.tx.filter(t=>t.id!=id);pend=null;save()}else pend=id;render()}
+function planv(){const tot=sum(D.plan,p=>p.q*p.r),{b,c}=bal(),av=b+c,diff=tot-av,mem=D.ppl.length||+D.mem||0;
+ return `<div class="card"><h3>ভবিষ্যৎ উন্নয়ন পরিকল্পনা</h3><div class="g">
+ <label>কাজের নাম (যেমন: দ্বিতীয় তলা, ওযুখানা)<input id="pn"></label>
+ <label>পরিমাণ<input type="number" id="pq" value="1" min="0"></label>
+ <label>একক দর (টাকা)<input type="number" id="pr" min="0"></label></div>
+ <button class="btn" onclick="addPlan()">যোগ করুন</button></div>
+ <div class="card"><div class="w"><table><tr><th>কাজ</th><th class="r">পরিমাণ</th><th class="r">দর</th><th class="r">মোট</th><th></th></tr>
+ ${D.plan.map(p=>`<tr><td>${esc(p.n)}</td><td class="r">${(+p.q).toLocaleString('bn-BD')}</td><td class="r">${f(p.r)}</td><td class="r">${f(p.q*p.r)}</td><td><button class="x" onclick="delPlan(${p.id})">${pend==p.id?'নিশ্চিত?':'✕'}</button></td></tr>`).join('')||'<tr><td colspan="5" class="m">কোনো কাজ যোগ করা হয়নি</td></tr>'}
+ </table></div></div>
+ <div class="card"><h3>হিসাব</h3><div class="k">
+ <div>মোট প্রয়োজনীয় খরচ<b>${f(tot)}</b></div><div>বর্তমান তহবিল<b>${f(av)}</b></div>
+ <div>${diff>0?'ঘাটতি':'উদ্বৃত্ত'}<b class="${diff>0?'out':'in'}">${f(Math.abs(diff))}</b></div></div>
+ <p>ওয়াদাকৃত বাকি নগদ: <b>${f(plDue().c)}</b> — আদায় হলে ${diff-plDue().c>0?'ঘাটতি থাকবে '+f(diff-plDue().c):'ঘাটতি পূরণ হবে'}</p><div class="g" style="margin-top:8px"><label>সদস্য/দাতা সংখ্যা (ঘাটতি ভাগ করতে)<input type="number" id="mm" value="${mem||''}" onchange="D.mem=+this.value;save();render()"></label></div>
+ ${diff>0&&mem>0?`<p>জনপ্রতি প্রায় <b>${f(Math.ceil(diff/mem))}</b> দিলে ঘাটতি পূরণ হবে।</p>`:''}</div>`}
+function addPlan(){const n=$('pn').value.trim(),q=+$('pq').value,r=+$('pr').value;if(!n||q<=0||r<=0)return toast('নাম, পরিমাণ ও দর দিন');
+ D.plan.push({id:Date.now(),n,q,r});save();render()}
+function delPlan(id){if(pend==id){D.plan=D.plan.filter(p=>p.id!=id);pend=null;save()}else pend=id;render()}
+function plDue(){return{c:D.pl.filter(p=>p.ty=='cash').reduce((s,p)=>s+Math.max(0,p.q-p.got),0)}}
+function plv(){
+ const cs=D.pl.filter(p=>p.ty=='cash'),ds=D.pl.filter(p=>p.ty=='dhan'),kq=p=>p.u=='মণ'?p.q*40:p.q,kg=p=>p.u=='মণ'?p.got*40:p.got;
+ const mon=k=>(k/40).toLocaleString('bn-BD',{maximumFractionDigits:2})+' মণ';
+ const cq=sum(cs,p=>p.q),cg=sum(cs,p=>p.got),dq=sum(ds,kq),dg=sum(ds,kg);
+ const by={};D.pl.forEach(p=>{const o=by[p.pur]=by[p.pur]||{c:0,cd:0,k:0,kd:0};if(p.ty=='cash'){o.c+=p.q;o.cd+=Math.max(0,p.q-p.got)}else{o.k+=kq(p);o.kd+=Math.max(0,kq(p)-kg(p))}});
+ const br=Object.entries(by).map(([k,o])=>`<tr><td>${esc(k)}</td><td class="r">${f(o.c)}</td><td class="r out">${f(o.cd)}</td><td class="r">${mon(o.k)}</td><td class="r out">${mon(o.kd)}</td></tr>`).join('')||'<tr><td colspan="5" class="m">কোনো ওয়াদা নেই</td></tr>';
+ const l=D.pl.filter(p=>!flt||(p.n+p.ad+p.pur).includes(flt)).sort((a,b)=>(a.dt||'9').localeCompare(b.dt||'9'));
+ const rs=l.map(p=>`<tr><td>${esc(p.n)}<br><span class="m">${esc(p.ad)} ${esc(p.ph)}</span></td><td>${p.ty=='cash'?f(p.q):p.q.toLocaleString('bn-BD')+' '+p.u+' ধান'}</td><td>${esc(p.pur)}<br><span class="m">${p.dt||''}</span></td><td class="r">${p.ty=='cash'?f(p.got):p.got.toLocaleString('bn-BD')+' '+p.u}</td><td>${p.got>=p.q?'<span class="in">পূরণ</span>':p.got>0?'আংশিক':'অপেক্ষমাণ'}</td><td style="white-space:nowrap">${p.got>=p.q?'':`<input type="number" id="g${p.id}" min="0" style="width:70px"><button class="x" onclick="recvPl(${p.id})">জমা</button>`}<button class="x" onclick="edPl(${p.id})">✎</button><button class="x" onclick="delPl(${p.id})">${pend==p.id?'নিশ্চিত?':'✕'}</button></td></tr>`).join('');
+ const opts=[...new Set([...D.plan.map(x=>x.n),'মসজিদ নির্মাণ/সম্প্রসারণ','মাসিক খরচ','ইমাম/মুয়াজ্জিনের বেতন','অন্যান্য'])].map(x=>`<option value="${esc(x)}">`).join('');
+ return `<div class="card"><h3>ওয়াদার সারসংক্ষেপ (${D.pl.length.toLocaleString('bn-BD')} জন)</h3><div class="k">
+<div>নগদ ওয়াদা<b>${f(cq)}</b></div><div>নগদ আদায়<b class="in">${f(cg)}</b></div><div>নগদ বাকি<b class="out">${f(Math.max(0,cq-cg))}</b></div>
+<div>ধান ওয়াদা<b>${mon(dq)}</b></div><div>ধান আদায়<b class="in">${mon(dg)}</b></div><div>ধান বাকি<b class="out">${mon(Math.max(0,dq-dg))}</b></div></div></div>
+${dsv(dg)}<div class="card"><h3>কোন কাজে লাগবে — আলাদা হিসাব</h3><div class="w"><table><tr><th>কাজ/উদ্দেশ্য</th><th class="r">নগদ ওয়াদা</th><th class="r">নগদ বাকি</th><th class="r">ধান ওয়াদা</th><th class="r">ধান বাকি</th></tr>${br}</table></div></div>
+<div class="card"><h3>নতুন ওয়াদা</h3><div class="g"><label>নাম<input id="pn1"></label><label>ঠিকানা<input id="pa1"></label><label>মোবাইল<input id="pp1" inputmode="tel"></label>
+<label>ধরন<select id="pt"><option value="cash">নগদ টাকা</option><option value="dhan">ধান</option></select></label>
+<label>পরিমাণ (টাকা বা ধান)<input type="number" id="pq1" min="0" step="any"></label><label>ধানের একক<select id="pu"><option>মণ</option><option>কেজি</option></select></label>
+<label>কোন কাজে দিবেন<input id="ppu" list="pdl"></label><label>দেওয়ার সম্ভাব্য তারিখ<input type="date" id="pd1"></label><label>মন্তব্য<input id="pno"></label></div><datalist id="pdl">${opts}</datalist>
+<button class="btn" onclick="addPl()">সংরক্ষণ</button><p class="m">১ মণ = ৪০ কেজি ধরা হয়েছে। ধানের একক শুধু ধান বেছে নিলে প্রযোজ্য।</p></div>
+<div class="card"><h3>ওয়াদাকারীদের তালিকা</h3><input placeholder="নাম/ঠিকানা/কাজ দিয়ে খুঁজুন, তারপর এন্টার চাপুন" value="${esc(flt)}" onchange="flt=this.value;render()"><div class="w"><table><tr><th>নাম ও ঠিকানা</th><th>ওয়াদা</th><th>কাজ/তারিখ</th><th class="r">আদায়</th><th>অবস্থা</th><th></th></tr>${rs||'<tr><td colspan="6" class="m">কোনো ওয়াদা নেই</td></tr>'}</table></div>
+<p class="m">নগদ আদায়ে "জমা" চাপলে টাকা কোষাধ্যক্ষের হাতে "বিশেষ দান" হিসেবে আয়ে যোগ হয়। ধান আদায় টাকার হিসাবে যোগ হয় না — ধান বিক্রি করলে আয় ট্যাবে আলাদা এন্ট্রি দিন। ওয়াদা মুছলে আগে যোগ হওয়া আয় মোছে না।</p></div>`}
+function addPl(){const n=$('pn1').value.trim(),q=+$('pq1').value;if(!n||q<=0)return toast('নাম ও পরিমাণ দিন');const ty=$('pt').value;
+ const o={id:Date.now(),n,ad:$('pa1').value.trim(),ph:$('pp1').value.trim(),ty,q,u:ty=='dhan'?$('pu').value:'',pur:$('ppu').value.trim()||'সাধারণ',dt:$('pd1').value,note:$('pno').value.trim(),got:0};if(epl){const p=D.pl.find(x=>x.id==epl);if(p){o.id=p.id;o.got=p.got;Object.assign(p,o)}epl=null}else D.pl.push(o);save();render();toast('সংরক্ষিত')}
+function recvPl(id){const p=D.pl.find(x=>x.id==id),a=+$('g'+id).value;if(!p||a<=0)return toast('পরিমাণ দিন');p.got+=a;
+ if(p.ty=='cash')D.tx.push({id:Date.now(),type:'in',date:today(),cat:INC[3],name:p.n,amt:a,acc:'cash',note:'ওয়াদা আদায় — '+p.pur});
+ save();render();toast(p.ty=='cash'?'আদায় হয়েছে ও আয়ে যোগ হয়েছে':'ধান জমা হয়েছে')}
+function delPl(id){if(pend==id){D.pl=D.pl.filter(p=>p.id!=id);pend=null;save()}else pend=id;render()}
+let epl=null;
+function edPl(id){const p=D.pl.find(x=>x.id==id);if(!p)return;epl=id;render();$('pn1').value=p.n;$('pa1').value=p.ad;$('pp1').value=p.ph;$('pt').value=p.ty;$('pq1').value=p.q;if(p.u)$('pu').value=p.u;$('ppu').value=p.pur;$('pd1').value=p.dt;$('pno').value=p.note;toast('সংশোধন করে সংরক্ষণ চাপুন');try{$('pn1').scrollIntoView()}catch(e){}}
+function dsv(dg){const sold=sum(D.ds,s=>s.kg),st=dg-sold,mon=k=>(k/40).toLocaleString('bn-BD',{maximumFractionDigits:2})+' মণ';
+ const rs=D.ds.slice().sort((a,b)=>b.dt.localeCompare(a.dt)).map(s=>`<tr><td>${s.dt}</td><td>${esc(s.buyer)}</td><td class="r">${mon(s.kg)}</td><td class="r">${f(s.rate)}/মণ</td><td class="r in">${f(s.total)}</td><td><button class="x" onclick="delDs(${s.id})">${pend==s.id?'নিশ্চিত?':'✕'}</button></td></tr>`).join('')||'<tr><td colspan="6" class="m">কোনো বিক্রি নেই</td></tr>';
+ return `<div class="card"><h3>ধান মজুদ ও বিক্রি</h3><div class="k"><div>আদায়কৃত ধান<b>${mon(dg)}</b></div><div>বিক্রি হয়েছে<b>${mon(sold)}</b></div><div>বর্তমান মজুদ<b>${mon(st)}</b></div><div>বিক্রয়লব্ধ টাকা<b class="in">${f(sum(D.ds,s=>s.total))}</b></div></div>
+<div class="g" style="margin-top:8px"><label>তারিখ<input type="date" id="sd" value="${today()}"></label><label>পরিমাণ<input type="number" id="sq" min="0" step="any"></label><label>একক<select id="su"><option>মণ</option><option>কেজি</option></select></label><label>মণ প্রতি দর (টাকা)<input type="number" id="sr" min="0"></label><label>ক্রেতা<input id="sb1"></label><label>টাকা কোথায় জমা<select id="sa"><option value="cash">কোষাধ্যক্ষের হাতে</option><option value="bank">ব্যাংক</option></select></label></div>
+<button class="btn" onclick="addDs(${st})">বিক্রি সংরক্ষণ</button><div class="w"><table><tr><th>তারিখ</th><th>ক্রেতা</th><th class="r">পরিমাণ</th><th class="r">দর</th><th class="r">টাকা</th><th></th></tr>${rs}</table></div><p class="m">বিক্রির টাকা স্বয়ংক্রিয়ভাবে "ধান বিক্রি" খাতে আয়ে যোগ হয়।</p></div>`}
+function addDs(st){const q=+$('sq').value,r=+$('sr').value;if(q<=0||r<=0)return toast('পরিমাণ ও দর দিন');const kg=$('su').value=='মণ'?q*40:q;if(kg>st+0.001)return toast('মজুদের চেয়ে বেশি বিক্রি করা যাবে না');
+ const total=Math.round(kg/40*r),id=Date.now(),b=$('sb1').value.trim()||'ধান বিক্রি',dt=$('sd').value||today();
+ D.ds.push({id,dt,kg,rate:r,total,buyer:b,tx:id+1});
+ D.tx.push({id:id+1,type:'in',date:dt,cat:'ধান বিক্রি',name:b,amt:total,acc:$('sa').value,note:(kg/40).toLocaleString('bn-BD',{maximumFractionDigits:2})+' মণ ধান'});save();render();toast('বিক্রি সংরক্ষিত ও আয়ে যোগ হয়েছে')}
+function delDs(id){if(pend==id){const s=D.ds.find(x=>x.id==id);D.tx=D.tx.filter(t=>t.id!=(s&&s.tx));D.ds=D.ds.filter(x=>x.id!=id);pend=null;save()}else pend=id;render()}
+function unlock(){if($('lp').value==D.pin){unl=true;render()}else toast('ভুল পিন')}
+function ed(id){const t=D.tx.find(x=>x.id==id);if(!t||t.type=='xfer')return toast('ব্যাংক লেনদেন সম্পাদনা নয়, মুছে নতুন দিন');tab=t.type;edit=t;render();$('d').value=t.date;$('c').value=t.cat;$('n').value=t.name;$('a').value=t.amt;$('ac').value=t.acc;$('o').value=t.note;toast('সম্পাদনা করে সংরক্ষণ চাপুন');try{window.scrollTo(0,0)}catch(e){}}
+function memv(){const m=mmon;let due=0;
+ const rs=D.ppl.map(p=>{const pd=sum(D.tx.filter(t=>t.type=='in'&&t.cat==INC[1]&&t.name==p.n&&t.date.startsWith(m))),d=Math.max(0,p.amt-pd);due+=d;
+ return `<tr><td>${esc(p.n)}<br><span class="m">${esc(p.ph)}</span></td><td class="r">${f(p.amt)}</td><td class="r in">${f(pd)}</td><td class="r">${d?`<span class="out">${f(d)}</span> <button class="x" onclick="payMem(${p.id})">জমা</button>`:'পরিশোধিত'}</td><td><button class="x" onclick="delMem(${p.id})">${pend==p.id?'নিশ্চিত?':'✕'}</button></td></tr>`}).join('');
+ return `<div class="card"><h3>নতুন সদস্য</h3><div class="g"><label>নাম<input id="mn1"></label><label>মোবাইল<input id="mp" inputmode="tel"></label><label>মাসিক চাঁদা (টাকা)<input type="number" id="ma" min="0"></label></div><button class="btn" onclick="addMem()">যোগ করুন</button></div>
+<div class="card"><h3>সদস্যদের মাসিক চাঁদা (মোট বকেয়া ${f(due)})</h3><label>মাস<input type="month" value="${m}" onchange="mmon=this.value||mmon;render()"></label><div class="w"><table><tr><th>সদস্য</th><th class="r">নির্ধারিত</th><th class="r">জমা</th><th class="r">বকেয়া</th><th></th></tr>${rs||'<tr><td colspan="5" class="m">কোনো সদস্য নেই</td></tr>'}</table></div><p class="m">"জমা" চাপলে বকেয়া টাকা কোষাধ্যক্ষের হাতে আয় হিসেবে যোগ হবে।</p></div>`}
+function addMem(){const n=$('mn1').value.trim(),a=+$('ma').value;if(!n||a<=0)return toast('নাম ও চাঁদার পরিমাণ দিন');D.ppl.push({id:Date.now(),n,ph:$('mp').value.trim(),amt:a});save();render()}
+function delMem(id){if(pend==id){D.ppl=D.ppl.filter(p=>p.id!=id);pend=null;save()}else pend=id;render()}
+function payMem(id){const p=D.ppl.find(x=>x.id==id);if(!p)return;const pd=sum(D.tx.filter(t=>t.type=='in'&&t.cat==INC[1]&&t.name==p.n&&t.date.startsWith(mmon))),d=p.amt-pd;if(d<=0)return;D.tx.push({id:Date.now(),type:'in',date:mmon==today().slice(0,7)?today():mmon+'-01',cat:INC[1],name:p.n,amt:d,acc:'cash',note:'মাসিক চাঁদা'});save();render();toast('জমা হয়েছে')}
+function yearly(){const rs=[];let mx=1;for(let i=1;i<=12;i++){const m=ry+'-'+String(i).padStart(2,'0'),a=sum(D.tx.filter(t=>t.type=='in'&&t.date.startsWith(m))),b=sum(D.tx.filter(t=>t.type=='out'&&t.date.startsWith(m)));mx=Math.max(mx,a,b);rs.push([i,a,b])}
+ return `<div class="card"><h3>বার্ষিক রিপোর্ট</h3><label>সাল<input type="number" value="${ry}" onchange="ry=this.value||ry;render()"></label><div class="w"><table><tr><th>মাস</th><th class="r">আয়</th><th class="r">খরচ</th><th></th></tr>`+rs.map(([i,a,b])=>`<tr><td>${i.toLocaleString('bn-BD')}</td><td class="r in">${f(a)}</td><td class="r out">${f(b)}</td><td style="width:30%"><div style="height:6px;background:var(--g);width:${a/mx*100}%"></div><div style="height:6px;background:var(--r);width:${b/mx*100}%;margin-top:2px"></div></td></tr>`).join('')+`<tr><th>মোট</th><th class="r">${f(sum(rs,x=>x[1]))}</th><th class="r">${f(sum(rs,x=>x[2]))}</th><th></th></tr></table></div></div>`}
+function txtRep(){const {b,c}=bal(),mi=D.tx.filter(t=>t.type=='in'&&t.date.startsWith(rmon)),mo=D.tx.filter(t=>t.type=='out'&&t.date.startsWith(rmon));
+ const ln=o=>Object.entries(o).map(([k,v])=>' - '+k+': '+f(v)).join('\n');
+ $('tr').value=D.name+' — হিসাব ('+rmon+')\nআয়: '+f(sum(mi))+'\n'+ln(sumBy(mi,'cat'))+'\nখরচ: '+f(sum(mo))+'\n'+ln(sumBy(mo,'cat'))+'\n\nব্যাংকে: '+f(b)+'\nকোষাধ্যক্ষের কাছে: '+f(c)+'\nমোট তহবিল: '+f(b+c)}
+function repv(){const mi=D.tx.filter(t=>t.type=='in'&&t.date.startsWith(rmon)),mo=D.tx.filter(t=>t.type=='out'&&t.date.startsWith(rmon));
+ const donors=sumBy(D.tx.filter(t=>t.type=='in'),'name');
+ return `<div class="card"><h3>মাসিক রিপোর্ট</h3><label>মাস নির্বাচন<input type="month" value="${rmon}" onchange="rmon=this.value||rmon;render()"></label>
+ <div class="k" style="margin-top:8px"><div>আয়<b class="in">${f(sum(mi))}</b></div><div>খরচ<b class="out">${f(sum(mo))}</b></div><div>মাসের সঞ্চয়<b>${f(sum(mi)-sum(mo))}</b></div></div></div>
+ <div class="card"><h3>আয়ের খাতওয়ারি</h3><table>${rows(sumBy(mi,'cat'))}</table></div>
+ <div class="card"><h3>খরচের খাতওয়ারি (বেতন, বিল, উন্নয়ন ইত্যাদি)</h3><table>${rows(sumBy(mo,'cat'))}</table></div>
+ <div class="card"><h3>কে কত দান করেছেন (সর্বমোট)</h3><table>${rows(donors)}</table></div>
+ ${yearly()}<div class="card"><h3>টেক্সট রিপোর্ট (কপি/শেয়ারের জন্য)</h3><textarea id="tr" rows="7"></textarea><div style="margin-top:8px"><button class="btn" onclick="txtRep()">রিপোর্ট তৈরি</button></div></div><div class="card"><h3>ব্যাকআপ</h3><p class="m">তথ্য শুধু এই ব্রাউজারে সংরক্ষিত থাকে। ফোন/ব্রাউজার বদলালে বা ডেটা মুছলে হারিয়ে যাবে — তাই নিয়মিত নিচের লেখা কপি করে কোথাও সেভ করে রাখুন।</p>
+ <textarea id="bk" rows="4"></textarea><div style="margin-top:8px;display:flex;gap:8px">
+ <button class="btn" onclick="$('bk').value=JSON.stringify(D)">ব্যাকআপ তৈরি</button>
+ <button class="btn s" onclick="restore()">ফিরিয়ে আনুন</button></div></div>`}
+function restore(){try{const x=JSON.parse($('bk').value);if(!Array.isArray(x.tx))throw 0;D=x;D.ds=D.ds||[];D.pl=D.pl||[];D.ppl=D.ppl||[];D.plan=D.plan||[];D.pin=D.pin||'';save();render();toast('ফিরিয়ে আনা হয়েছে')}catch(e){toast('ব্যাকআপ লেখাটি সঠিক নয়')}}
+render();
+</script></body></html>

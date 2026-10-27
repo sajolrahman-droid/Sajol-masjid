@@ -1,0 +1,6 @@
+{
+  "name": "মসজিদ সঙ্গী ও ডিজিটাল হিসাবঘর",
+  "description": "নামাজের সময়সূচী, কিবলা কম্পাস, মসজিদের লোকেশন ম্যাপ, দান, জিকির কাউন্টার, অফলাইন রিডিং ও মসজিদের পূর্ণাঙ্গ হিসাবঘর",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

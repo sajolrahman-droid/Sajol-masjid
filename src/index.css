@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-bn: "Noto Sans Bengali", "Hind Siliguri", system-ui, sans-serif;
+    --font-en: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    --font-ar: "Amiri", "Scheherazade New", serif;
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: var(--font-bn);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Font family selection bindings */
+  html[data-font-family="siliguri"] body {
+    font-family: "Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif;
+  }
+  html[data-font-family="noto"] body {
+    font-family: "Noto Sans Bengali", system-ui, sans-serif;
+  }
+  html[data-font-family="jakarta"] body {
+    font-family: "Plus Jakarta Sans", "Hind Siliguri", system-ui, sans-serif;
+  }
+  html[data-font-family="amiri"] body {
+    font-family: "Amiri", "Noto Sans Bengali", serif;
+  }
+  html[data-font-family="merriweather"] body {
+    font-family: "Merriweather", "Noto Sans Bengali", serif;
+  }
+
+  html[lang="en"] body {
+    font-family: var(--font-en);
+  }
+
+  html[lang="ar"] body {
+    font-family: var(--font-ar);
+    line-height: 1.8;
+  }
+
+  .font-arabic {
+    font-family: var(--font-ar);
+    line-height: 1.8;
+  }
+
+  .font-bengali {
+    font-family: var(--font-bn);
+  }
+
+  .font-english {
+    font-family: var(--font-en);
+  }
+}
+
+/* Elderly-friendly dynamic font scale classes */
+html[data-font-size="normal"] {
+  font-size: 16px;
+}
+html[data-font-size="large"] {
+  font-size: 18.5px;
+}
+html[data-font-size="xlarge"] {
+  font-size: 21.5px;
+}
+
+/* Senior readability utility classes */
+.elderly-card {
+  letter-spacing: 0.015em;
+}
+
+/* Custom theme overrides */
+html.theme-amber {
+  --theme-primary: #b45309;
+  --theme-accent: #f59e0b;
+}
+html.theme-amber body {
+  background-color: #fffdf5;
+  color: #451a03;
+}
+html.theme-amber.dark body {
+  background-color: #171105;
+  color: #fef3c7;
+}
+
+html.theme-navy {
+  --theme-primary: #1e3a8a;
+  --theme-accent: #38bdf8;
+}
+html.theme-navy body {
+  background-color: #0d1527;
+  color: #f1f5f9;
+}
+html.theme-navy.light body {
+  background-color: #f0f4f9;
+  color: #0f172a;
+}
+
+html.theme-sepia {
+  --theme-primary: #78350f;
+  --theme-accent: #d97706;
+}
+html.theme-sepia body {
+  background-color: #faf5ea;
+  color: #382c1e;
+}
+html.theme-sepia.dark body {
+  background-color: #211c15;
+  color: #f3ece0;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.5);
+}
+
+/* Compass animations */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 0.4; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

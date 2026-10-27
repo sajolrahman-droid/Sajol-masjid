@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="50%" stop-color="#047857" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)" />
+  <!-- Pattern Border -->
+  <rect x="24" y="24" width="464" height="464" rx="90" fill="none" stroke="#10b981" stroke-opacity="0.3" stroke-width="4" />
+  
+  <!-- Crescent & Star -->
+  <path d="M 285 110 A 38 38 0 1 0 320 176 A 32 32 0 1 1 285 110 Z" fill="url(#goldGrad)" />
+  <polygon points="325,130 329,142 342,142 332,150 336,162 325,154 314,162 318,150 308,142 321,142" fill="#fef08a" />
+
+  <!-- Main Mosque Dome -->
+  <path d="M 256 165 C 235 220 170 240 170 310 L 342 310 C 342 240 277 220 256 165 Z" fill="url(#goldGrad)" />
+  <!-- Dome finial -->
+  <path d="M 256 140 L 256 165" stroke="url(#goldGrad)" stroke-width="6" stroke-linecap="round" />
+  <circle cx="256" cy="135" r="7" fill="#fef08a" />
+
+  <!-- Mosque Base Structure -->
+  <rect x="150" y="310" width="212" height="110" rx="6" fill="#f0fdf4" />
+  <rect x="140" y="420" width="232" height="18" rx="4" fill="#dcfce7" />
+
+  <!-- Center Arch Doorway -->
+  <path d="M 228 420 L 228 355 C 228 340 256 325 256 325 C 256 325 284 340 284 355 L 284 420 Z" fill="#064e3b" />
+  <circle cx="256" cy="355" r="5" fill="#f59e0b" />
+
+  <!-- Side Windows -->
+  <path d="M 175 390 L 175 365 C 175 355 195 348 195 348 C 195 348 215 355 215 365 L 215 390 Z" fill="#047857" opacity="0.6" />
+  <path d="M 297 390 L 297 365 C 297 355 317 348 317 348 C 317 348 337 355 337 365 L 337 390 Z" fill="#047857" opacity="0.6" />
+
+  <!-- Left Minaret -->
+  <rect x="110" y="240" width="26" height="180" rx="3" fill="#f0fdf4" />
+  <path d="M 123 190 C 115 215 106 225 106 240 L 140 240 C 140 225 131 215 123 190 Z" fill="url(#goldGrad)" />
+  <line x1="123" y1="175" x2="123" y2="190" stroke="url(#goldGrad)" stroke-width="4" />
+  <circle cx="123" cy="172" r="4" fill="#fef08a" />
+  <rect x="104" y="270" width="38" height="8" rx="2" fill="#047857" />
+
+  <!-- Right Minaret -->
+  <rect x="376" y="240" width="26" height="180" rx="3" fill="#f0fdf4" />
+  <path d="M 389 190 C 381 215 372 225 372 240 L 406 240 C 406 225 397 215 389 190 Z" fill="url(#goldGrad)" />
+  <line x1="389" y1="175" x2="389" y2="190" stroke="url(#goldGrad)" stroke-width="4" />
+  <circle cx="389" cy="172" r="4" fill="#fef08a" />
+  <rect x="370" y="270" width="38" height="8" rx="2" fill="#047857" />
+</svg>
